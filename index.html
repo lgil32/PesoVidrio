@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capitan Pirata en Kilos</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for background image and font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://placehold.co/1200x800/000/FFF?text=Calavera+Pirata'); /* Placeholder for pirate skull image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* Ensures background stays fixed during scroll */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure body takes full viewport height */
+        }
+        /* Overlay to make text more readable on top of the background image */
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2d3748; /* Dark grey */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568; /* Medium grey */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* Light grey on hover */
+        }
+    </style>
+</head>
+<body class="text-white">
+    <div class="overlay flex flex-col items-center justify-center flex-grow p-4 sm:p-6 md:p-8">
+        <div class="bg-gray-800 bg-opacity-90 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-md mx-auto my-auto border-4 border-yellow-500">
+            <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-yellow-400">Capitan Pirata en Kilos</h1>
+
+            <div class="space-y-4">
+                <!-- Ancho Input -->
+                <div>
+                    <label for="ancho" class="block text-lg font-medium mb-2">Ancho (mm):</label>
+                    <input type="number" id="ancho" placeholder="Ej: 1000" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" min="0">
+                </div>
+
+                <!-- Alto Input -->
+                <div>
+                    <label for="alto" class="block text-lg font-medium mb-2">Alto (mm):</label>
+                    <input type="number" id="alto" placeholder="Ej: 1500" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" min="0">
+                </div>
+
+                <!-- Espesor Input -->
+                <div>
+                    <label for="espesor" class="block text-lg font-medium mb-2">Espesor (mm):</label>
+                    <input type="number" id="espesor" placeholder="Ej: 6" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" min="0" step="0.1">
+                </div>
+
+                <!-- Cantidad de Vidrios Input -->
+                <div>
+                    <label for="cantidad" class="block text-lg font-medium mb-2">Cantidad de vidrios:</label>
+                    <input type="number" id="cantidad" value="1" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" min="1">
+                </div>
+            </div>
+
+            <!-- Botón Calcular -->
+            <button id="calcularBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 rounded-lg mt-6 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                Calcular Peso
+            </button>
+
+            <!-- Área de Resultado -->
+            <div id="resultado" class="mt-6 p-4 bg-gray-700 rounded-lg text-center text-xl sm:text-2xl font-semibold border-2 border-yellow-500">
+                Peso del vidrio: 0.00 kg
+            </div>
+
+            <!-- Mensaje de Error (oculto por defecto) -->
+            <div id="errorMensaje" class="mt-4 p-3 bg-red-600 rounded-lg text-white text-center hidden">
+                Por favor, ingresa valores válidos y positivos en todos los campos.
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full bg-gray-900 bg-opacity-80 text-center py-4 text-gray-400 text-sm sm:text-base mt-auto">
+        Desarrollado por: LAGF como Obsequio a Carlos Hernandez
+    </footer>
+
+    <script>
+        // Get references to HTML elements
+        const anchoInput = document.getElementById('ancho');
+        const altoInput = document.getElementById('alto');
+        const espesorInput = document.getElementById('espesor');
+        const cantidadInput = document.getElementById('cantidad');
+        const calcularBtn = document.getElementById('calcularBtn');
+        const resultadoDiv = document.getElementById('resultado');
+        const errorMensajeDiv = document.getElementById('errorMensaje');
+
+        // Factor constante para el cálculo del peso del vidrio
+        const FACTOR = 2.5; // Valor proporcionado por el usuario
+
+        /**
+         * Calculates the weight of the glass based on the provided dimensions and quantity.
+         * Displays the result or an error message if inputs are invalid.
+         */
+        function calcularPesoVidrio() {
+            // Hide any previous error messages
+            errorMensajeDiv.classList.add('hidden');
+
+            // Get values from input fields and parse them as floats
+            const ancho = parseFloat(anchoInput.value);
+            const alto = parseFloat(altoInput.value);
+            const espesor = parseFloat(espesorInput.value);
+            const cantidad = parseInt(cantidadInput.value); // Quantity should be an integer
+
+            // Validate inputs: ensure they are numbers and positive
+            if (isNaN(ancho) || isNaN(alto) || isNaN(espesor) || isNaN(cantidad) ||
+                ancho <= 0 || alto <= 0 || espesor <= 0 || cantidad <= 0) {
+                resultadoDiv.textContent = 'Peso del vidrio: 0.00 kg'; // Reset result
+                errorMensajeDiv.classList.remove('hidden'); // Show error message
+                return; // Stop execution if validation fails
+            }
+
+            // Calculate the weight using the formula: Ancho * Alto * Espesor * Cantidad * Factor
+            // Note: The formula assumes all dimensions are in millimeters (mm)
+            // The factor 2.5 implicitly converts the result to kilograms (kg)
+            const peso = (ancho * alto * espesor * cantidad * FACTOR) / 1000000; // Divide by 1,000,000 to convert from mm^3 to m^3 (if factor is for kg/m^3) or adjust as per actual factor unit.
+                                                                                // Given the factor is 2.5, it's likely already adjusted for mm, so we just multiply.
+                                                                                // If factor 2.5 is for kg/m^3, and inputs are mm, then (mm * mm * mm) * kg/m^3 needs (1000mm/m)^3 = 1,000,000,000.
+                                                                                // However, the user simply stated "multiplicacion de los 5 valores", implying the factor already accounts for units.
+                                                                                // Let's assume the factor 2.5 is such that (mm * mm * mm * 2.5) directly gives grams or a unit that needs /1000 to be kg.
+                                                                                // A common density for glass is around 2500 kg/m^3.
+                                                                                // If Ancho, Alto, Espesor are in mm, then volume in mm^3.
+                                                                                // Volume (m^3) = (Ancho * Alto * Espesor) / (1000^3)
+                                                                                // Peso (kg) = Volume (m^3) * Density (kg/m^3)
+                                                                                // So, Peso = (Ancho * Alto * Espesor / 1,000,000,000) * 2500
+                                                                                // Peso = Ancho * Alto * Espesor * 2.5 / 1,000,000
+                                                                                // This matches the user's "Factor de 2.5" and "resultado en kilos".
+            // Display the result, formatted to two decimal places
+            resultadoDiv.textContent = `Peso del vidrio: ${peso.toFixed(2)} kg`;
+        }
+
+        // Add event listener to the calculate button
+        calcularBtn.addEventListener('click', calcularPesoVidrio);
+
+        // Optional: Allow calculation on Enter key press in any input field
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    calcularPesoVidrio();
+                }
+            });
+        });
+
+        // Initial calculation on load (shows 0.00 kg)
+        calcularPesoVidrio();
+    </script>
+</body>
+</html>
